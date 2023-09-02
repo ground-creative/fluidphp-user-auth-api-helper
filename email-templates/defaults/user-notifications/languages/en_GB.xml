@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+	
+	<!-- USER REGISTRATION / VERIFICATION EMAIL -->
+	
+	<translation key="user_registration_subject">Welcome to {_company_name}</translation>
+	<translation key="reg_btn_txt">Verify my account</translation>
+	<translation key="registration_hi">Hi</translation>
+	<translation key="registration_welcome">Welcome to {_company_name}</translation>
+	<translation key="email_user_registration_verify_1">You just need to click on the button to verify your account</translation>
+	<translation key="email_user_registration_verify_2">If you did not try to activate your account recently, you can ignore this email</translation>
+	<translation key="email_user_registration_verify_3">Or you can copy and paste in your browser the following link:</translation>
+	
+	<!-- RESET PASSWORD EMAIL -->
+
+	<translation key="user_reset_password_subject">{_company_name} reset password request</translation>
+	<translation key="pass_reset_btn_txt">Reset my password</translation>
+	<translation key="pass_reset_txt_1">You have requested to reset the password for your account, click the button and follow the intructions</translation>
+	<translation key="pass_reset_txt_2">If you did not try to reset your password, you can ignore this email</translation>
+	
+</database>
