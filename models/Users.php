@@ -4,5 +4,5 @@
 
 	class Users extends \Model
 	{
-		protected static $_guard = ['id'];
+		//protected static $_guard = ['id'];
 	}

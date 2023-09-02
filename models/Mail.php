@@ -49,7 +49,7 @@
 			$manager = new \helpers\EmailManager\Core($tpl, [$data['lang'], 'en_GB']);
 			$data['_user_lang'] = $data['lang'];
 			$data['_user_email'] = $data['email'];
-			$email_data = array_merge($data, \App::options("mail"));
+			$email_data = array_merge($data, \App::options("user-auth-api.mail_tpls_data"));
 			$manager->data( $email_data )->compile('view.reset-password')->subject("xml:user_reset_password_subject", true );
 			$mailer = static::buildMailer($data['email'], $manager->getTemplate(), $manager->getSubject(), $from, $fromName);			
 			if ($err = static::_sendMail($mailer)) 

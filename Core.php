@@ -5,12 +5,13 @@
 	use  \helpers\Validator\Core as Validator;
 	use \helpers\Logger\Manager as Logger;
 	use \helpers\UserAuthApi\models\Response;
+	use WpOrg\Requests\Requests as Requests;
 	
 	class Core
 	{
 		public static function getApiUrl()
 		{
-			$options = \App::options('auth_user_api');
+			$options = \App::options('user-auth-api');
 			return $options['url'] . $options['prefix'];
 		}
 	
@@ -86,9 +87,9 @@
 						PRIMARY KEY (`id`)
 				);');
 			}
-			if (empty($qb->run('SHOW TABLES LIKE "users_autologin"')))
+			if (empty($qb->run('SHOW TABLES LIKE "users_autologin_tokens"')))
 			{
-				$qb->run('CREATE TABLE `users_autologin` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				$qb->run('CREATE TABLE `users_autologin_tokens` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 						`code` varchar(255) DEFAULT NULL,
 						`user_id` int(11) DEFAULT NULL,
 						`expires` timestamp DEFAULT NULL,
@@ -105,15 +106,50 @@
 			{
 				Logger::msg('starting to process new request')->script(__METHOD__, __LINE__)->save(); 
 				$options = \App::options('user-auth-api');
-				if (\Router::getProtocol() . '://'. $_SERVER[ 'HTTP_HOST' ] != $options['url'])
+				if (\Router::getProtocol() . '://'. $_SERVER[ 'HTTP_HOST' ] != $options['url'] && 
+						false === strpos(\Router::getUri('path'), $options['prefix'] . '/wrapper'))
 				{
 					echo Response::error(401);
 					return true;
 				}
 			} );
+			\Router::filter( '_user-auth-api.check_login' , function( )	// check if user is logged in or if we have an autologin cookie
+			{
+				if (session_id() == ''){ session_start(); }
+				if (!ptc_session_get( 'user.is_loggedin'))
+				{
+					if ($autologin = \Auth::getCookie('_autologin'))
+					{
+						try
+						{
+							$request = Requests::put(\helpers\UserAuthApi\Core::getApiUrl() . '/account/auto-login/' . $autologin . '/');
+							$json = json_decode($request->body);
+							if ($json->success == true)
+							{
+								ptc_session_set( 'user.is_loggedin' , true, true);
+								ptc_session_set( 'user.data', (array)$json->data, true);
+							}
+						}
+						catch (\Throwable $e)
+						{
+							return '{"error": 1, "message": "' . $e->getMessage() . '", "code": ' . $e->getCode(). '}';
+						}
+						
+					}
+					if ( \Router::isAjax( ) )
+					{ 
+						Router::header( 401 ); 
+						echo ptc_json( 'unauthorized' );
+						return true; // stop further execution
+					}
+					\Router::redirect( Router::getRoute( 'login' ) , 302 );
+					return true; // stop further execution
+				}
+			} );
 			\Router::group('user-auth-api' ,function()
 			{
 				\Router::controller(controllers\User::$prefix_uri, '\helpers\UserAuthApi\controllers\User'); 
+				\Router::controller(controllers\Wrapper::$prefix_uri, '\helpers\UserAuthApi\controllers\Wrapper'); 
 				\Router::notFound(404, function()
 				{
 					if (false !== strpos(\Router::getUri('path'), \App::options('user-auth-api.prefix')))

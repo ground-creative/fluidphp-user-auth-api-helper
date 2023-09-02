@@ -2,11 +2,13 @@
 
 	return
 	[
-		'_load'			=>	'\helpers\UserAuthApi\Core::setUp',
-		'url'				=>	$_ENV['USER_AUTH_APP_URL'],
-		'prefix'			=>	$_ENV['APP_ENV'] . '/user-auth-api',
-		'set_handlers'		=>	true, 
-		'main_app_domain'	=>	$_ENV['MAIN_APP_DOMAIN'],
+		'_load'					=>	'\helpers\UserAuthApi\Core::setUp',
+		'url'						=>	$_ENV['USER_AUTH_APP_URL'],	// use localhost
+		'prefix'					=>	$_ENV['APP_ENV'] . '/user-auth-api',
+		'set_handlers'				=>	true, 
+		'main_app_domain'			=>	$_ENV['MAIN_APP_DOMAIN'],
+		'autologin_expires'			=>	'30', // days
+		'autologin_cookie_name'		=>	'_autologin',
 		'mail_tpls_data'	=>
 		[
 			"_company_name"		=>	$_ENV['EMAIL_COMPANY_ADDRESS'],

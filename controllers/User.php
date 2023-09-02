@@ -9,21 +9,18 @@
 	use \helpers\UserAuthApi\models\Request;
 	use \helpers\UserAuthApi\models\Response;
 	use \helpers\UserAuthApi\models\Users;
+	use \helpers\UserAuthApi\models\User_Control_Links;
+	use \helpers\UserAuthApi\models\Users_Autologin_Tokens;
+	use \helpers\UserAuthApi\models\Mail;
 
 	class User
 	{
-	
 		public static $prefix_uri = '/account';
-		
-		public function get_new_token( )
-		{
-			//echo "HELLO";
-		}
 		/** 
 		* uri: /user-auth-api/account/login/
 		* description: tries to log user in
 		* params: username, password
-		* return data:
+		* return data: user data
 		*/
 		public function post_login( )
 		{
@@ -54,11 +51,13 @@
 				break;
 				default: // 1
 					$user = Auth::user($data['username'])->toArray();
-					unset($user['id']);
 					if ($inputs['remember_me'])
 					{
-					
+						$token = Users_Autologin_Tokens::insert($user['id']);
+						$user['autologin_token'] = $token->code;
+						$user['autologin_expires'] = $token->expires;
 					}
+					unset($user['id']);
 					return Response::success("User logged in succesfully", $user);
 			}
 		}
@@ -72,13 +71,18 @@
 		
 		}
 		/** 
-		* uri: /auto-login/{cookie}/
+		* uri: /user-auth-api/account/auto-login/{code}/
 		* description: tries to log in with existing login_token
+		* params: see config/validator.php
 		* return data: returns a new user autologin token if successful
 		*/
-		public function put_auto_login( $cookie )
+		public function put_auto_login($code)
 		{ 
-
+			if (!$user_id = Users_Autologin_Tokens::getUserId($code))
+			{ 
+				return Response::error(814);
+			}
+			return Response::success("succefully validated autologin token", Auth::user($user_id)->toArray());
 		}
 		/** 
 		* uri: /user-auth-api/account/register/
@@ -117,7 +121,7 @@
 			}
 		}
 		/**
-		* uri: /user-auth-api/account/verify/{verificationCode}/
+		* uri: /user-auth-api/account/verify/{verificationCode}/{lang?}/
 		* description: tries to verify a user account
 		*/
 		public function put_verify($verificationCode, $lang = 'en_GB')
@@ -142,6 +146,7 @@
 		}
 		/**
 		* uri: /user-auth-api/account/new-password-request/
+		* params: see config/validator.php
 		* description: send an email with a link to reset the user password
 		* params: username
 		*/
@@ -160,14 +165,15 @@
 			{
 				return Response::error(102);
 			}
-			if (!$code = \models\User_Control_Links::insert($user->id))
+			if (!$code = User_Control_Links::insert($user->id))
 			{
 				return Response::error(500);
 			}
-			$mail_options = \App::options("mail");
+			$mail_options = \App::options("user-auth-api.mail_config");
 			$data = $user->toArray();
 			$data['_code'] = $code;
-			\models\Mail::sendUserResetPass($mail_options['noreply_address'], $mail_options['_company_name'], $data);
+			Mail::sendUserResetPass($mail_options['noreply_address'], 
+				\App::options('user-auth-api.mail_tpls_data._company_name'), $data);
 			return Response::success("User password request email sent successfully");
 		}
 		/**
@@ -184,17 +190,7 @@
 		*/
 		protected static $_where = array
 		( 
-			//'serviceID'	 	=> '^\d+$' , 				// numeric only
-			//'verificationCode' 	=> '^[[:alnum:]]*$' , 		// alphanumeric only
-			//'cookie' 			=> '^[[:alnum:]]*$' , 		// alphanumeric only
-			//'saleID' 			=> '^[[:alnum:]]*$' 		// alphanumeric only
-		);
-		/**
-		* before filters
-		*/
-		protected static $_before = array
-		( 
-			//'put_auto_login' 	=>	'auth.autologin.bp' ,
-			//'post_login'		=>	'auth.is_user_blocked|auth.is_account_blocked_bp'
+			'verificationCode' 	=> '^[[:alnum:]]*$',		// alphanumeric only
+			'resetLink' 		=> '^[[:alnum:]]*$' 		// alphanumeric only
 		);
 	}
