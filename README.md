@@ -28,20 +28,19 @@ This is a helper for fluidphp framework, to authenticate users on your website o
 
 3 - Create "logger.php" file in app/config folder and add your configuration if not present already
 ```
-
-	return
+return
+[
+	'develop'	=>
 	[
-		'develop'	=>
-		[
-			'connection'	=>	'default' ,
-			'table'		=>	'log'
-		] ,
-		'prod'	=>
-		[
-			'connection'	=>	'default' ,
-			'table'		=>	'log'
-		]
-	];
+		'connection'	=>	'default' ,
+		'table'		=>	'log'
+	] ,
+	'prod'	=>
+	[
+		'connection'	=>	'default' ,
+		'table'		=>	'log'
+	]
+];
 ```
 4 - Configure "auth.php" in app/config to add the api user model
 ```

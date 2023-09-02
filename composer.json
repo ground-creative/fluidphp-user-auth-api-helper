@@ -23,7 +23,8 @@
 		"fluidphp/logger-helper": "^1.0.0",
 		"fluidphp/emailmanager-helper": "^1.0.0",
 		"fluidphp/translator-helper": "^1.0.0",
-		"phpmailer/phpmailer": "^6.7"
+		"phpmailer/phpmailer": "^6.7",
+		"rmccue/requests": "^2.0"
 	} ,
 	"autoload": 
 	{
