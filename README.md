@@ -36,3 +36,4 @@ This is a helper for fluidphp framework, to authenticate users on your website o
 5- Move email-templates folder in app/views
 
 # Endpoints
+{}
