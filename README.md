@@ -24,16 +24,18 @@ This is a helper for fluidphp framework, to authenticate users on your website o
 }
 ```
 
-2 - Create "user-auth-api.php" config file in app/config folder and copy the code from "user-auth-api.config.sample.php"
+2 - Create "user-auth-api.php" config file in app/config folder and copy the code from "user-auth-api.config.sample.php" (possibly use env.sample file)
 
 3 - Create "logger.php" file in app/config folder and copy the code from "logger.config.sample.php"
 
-4 - Configure "auth.php" in app/config to add the api user model
+4 - Configure database option in "db.php" file
+
+5 - Configure "auth.php" in app/config to add the api user model
 ```
 'model'	=>	'\helpers\UserAuthApi\models\Users',	
 ```
 
-5- Move email-templates folder in app/views
+6- Move email-templates to the folder in app/views
 
 # Endpoints
 {}
