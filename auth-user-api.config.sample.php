@@ -9,6 +9,7 @@
 		'main_app_domain'			=>	$_ENV['MAIN_APP_DOMAIN'],
 		'autologin_expires'			=>	'30', // days
 		'autologin_cookie_name'		=>	'_autologin',
+		'validator_file'				=>	ptc_path('root') . '/vendor/fluidphp/helpers/UserAuthApi/config/validator.php',
 		'mail_tpls_data'	=>
 		[
 			"_company_name"		=>	$_ENV['EMAIL_COMPANY_ADDRESS'],
