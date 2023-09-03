@@ -71,10 +71,11 @@ catch (\Throwable $e)
 	return '{"error": 1, "message": "' . $e->getMessage() . '", "code": ' . $e->getCode(). '}';
 }
 ```
+Keep in mind that calling the api directly will not allow session variables to be set.
 
-### Calling the authentication api 
+### Calling the authentication api directly
 
-The authentication api accepts only calls from the specified domain set with the parameter "url" in the config file user-auth-api.php.<br />
+The API should be only called directly within the localhost environment.<br />
 To call the authentication api u can use any request library
 ```
 $app = \App::option('app');
@@ -133,7 +134,7 @@ catch (\Throwable $e)
 	- params: see config/validator.php
 	- return data: returns user data
 	
-#### Verify User Account
+#### Verify Account
 
 - {(http|https)}://{main_doman}/{app_path}/wrapper/verify/{verificationCode}/
 
@@ -192,7 +193,7 @@ The API should be only called directly within the localhost environment, therefo
 	- params: see config/validator.php
 	- return data: returns user data
 	
-#### Verify User Account
+#### Verify Account
 
 - {(http|https)}://{USER_AUTH_APP_URL}/{app_path}/account/verify/{verificationCode}/
 
