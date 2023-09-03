@@ -17,7 +17,7 @@
 		
 		public static function setExpired($code)
 		{
-			return User_Control_Links::where( 'code' , '=' , $code )
+			return Users_Autologin_Tokens::where( 'code' , '=' , $code )
 					->update( array( 'status' => 0 ) )
 					->run( );
 		}
