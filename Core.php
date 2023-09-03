@@ -104,7 +104,11 @@
 			$options = \App::options('user-auth-api');
 			\Router::when($options['prefix'] . '/*', function()
 			{
-				Logger::msg('starting to process new request')->script(__METHOD__, __LINE__)->save(); 
+				$options = \App::options('user-auth-api');
+				if (false === strpos(\Router::getUri('path'), $options['prefix'] . '/wrapper'))
+				{
+					Logger::msg('starting to process new request')->script(__METHOD__, __LINE__)->save(); 
+				}
 				$options = \App::options('user-auth-api');
 				if (\Router::getProtocol() . '://'. $_SERVER[ 'HTTP_HOST' ] != $options['url'] && 
 						false === strpos(\Router::getUri('path'), $options['prefix'] . '/wrapper'))
