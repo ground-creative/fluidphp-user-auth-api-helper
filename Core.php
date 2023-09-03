@@ -22,7 +22,7 @@
 			//if (false === strpos(!\Router::getUri('path'), $class_vars['prefix_uri'])){ return; }
 			$auth_options = array_merge(\App::options('auth'), $options);
 			\App::options('user-auth-api' , $auth_options);
-			\App::options('validator.user-auth-api', require_once( __DIR__ . '/config/validator.php'));
+			\App::options('validator.user-auth-api', require_once($auth_options['validator_file']));
 			Validator::loadConfig(\App::options('validator.user-auth-api'));
 			\App::storage('_user_auth_api.session.id', \Auth::random(26));
 			if  ($auth_options['set_handlers'] == true){ static::_setHandlers();}
@@ -142,7 +142,7 @@
 						echo ptc_json( 'unauthorized' );
 						return true; // stop further execution
 					}
-					\Router::redirect( Router::getRoute( 'login' ) , 302 );
+					\Router::redirect( \Router::getRoute( 'login' ) , 302 );
 					return true; // stop further execution
 				}
 			} );

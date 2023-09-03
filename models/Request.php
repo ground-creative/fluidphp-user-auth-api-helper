@@ -90,7 +90,7 @@
 		{
 			array_walk($data, function(&$value, $key)
 			{
-				if ($key == "password_1" || $key == "password_2") { $value = "XXXXXX"; }
+				if ($key == "password") { $value = "XXXXXX"; }
 			});
 			return $data;
 		}

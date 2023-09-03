@@ -62,15 +62,6 @@
 			}
 		}
 		/** 
-		* uri: /user-auth-api/account/fb-login/
-		* description:
-		* return data:
-		*/
-		public function post_fb_login( )
-		{ 
-		
-		}
-		/** 
 		* uri: /user-auth-api/account/auto-login/{code}/
 		* description: tries to log in with existing login_token
 		* params: see config/validator.php
@@ -121,10 +112,10 @@
 			}
 		}
 		/**
-		* uri: /user-auth-api/account/verify/{verificationCode}/{lang?}/
+		* uri: /user-auth-api/account/verify/{verificationCode}/
 		* description: tries to verify a user account
 		*/
-		public function put_verify($verificationCode, $lang = 'en_GB')
+		public function put_verify($verificationCode)
 		{ 
 			Logger::debug('starting to verify user account with code ' . $verificationCode)->script(__METHOD__, __LINE__)->save(); 
 			$verify = Auth::verify($verificationCode);
@@ -178,12 +169,29 @@
 		}
 		/**
 		* uri: /user-auth-api/account/change-password/{resetLink}/
-		* description: send an email with a link to reset the user password
-		* params: 
+		* description: change user password
+		* params 
 		*/
-		public function post_change_password( $resetLink )
+		public function post_change_password($resetLink)
 		{
-		
+			$case = "user_change_password";
+			$inputs = Validator::inputs('_request');
+			if ($invalid = Request::check($case,$inputs))
+			{
+				$errors = $invalid->getErrors();
+				return Response::error($invalid->getErrMsgs(key($errors), 
+							key(reset($errors))), Request::firstError($invalid));
+			}
+			if (!$user_id = User_Control_Links::getUserId($resetLink))
+			{
+				return Response::error(107);
+			}
+			if (!Auth::password($user_id, $inputs['password']))
+			{
+				return Response::error(500);
+			}
+			User_Control_Links::setExpired($resetLink);
+			return Response::success("User password has been changed");
 		}
 		/**
 		* parameters regex patterns

@@ -32,7 +32,7 @@
 		/* Defaults if value is not set */
 		'defaults'			=>	array
 		(
-			'lang'				=>	'em_GB' ,
+			'lang'				=>	'en_GB' ,
 			'birthdate'			=>	'_NULL_',
 			'remember_me'		=>	'_NULL_'
 		) ,
@@ -44,8 +44,7 @@
 		/* Custom validation methods */
 		'custom_methods'	=>	array
 		(
-			'duplicate'			=>	'\helpers\UserAuthApi\models\Request::duplicate' ,
-			//'login_token'			=>	'\interfaces\Request::check_login_token'
+			'duplicate'			=>	'\helpers\UserAuthApi\models\Request::duplicate'
 		) ,
 		/* Rules */	
 		'rules'			=>	
@@ -55,13 +54,11 @@
 			[
 				'firstname' 			=>	'required' ,
 				'lastname' 			=>	'required' ,
-				'username' 			=>	'required||duplicate:username||min:5' ,
-				'email_1' 				=>	'required||email||duplicate:email' ,	
-				'email_2'				=>	'required||equalTo:email_1' ,				
-				'password_1'  			=>	'required||min:5||max:20' ,
-				'password_2'			=>	'required||equalTo:password_1' ,
-				//'lang'				=>	'match:{regex}||default:{defaults}||empty:en_GB',
-				//'birthdate'			=>	'match:{regex}||default:{defaults}||empty:1980-01-01'
+				'username' 			=>	'required||duplicate:username||min:6' ,
+				'email' 				=>	'required||email||duplicate:email' ,			
+				'password'  			=>	'required||min:5||max:20' ,
+				//'lang'				=>	'match:{regex}||default:{defaults}||empty:en_GB',		regex is failing here
+				//'birthdate'			=>	'match:{regex}||default:{defaults}||empty:1980-01-01' 	regex is failing here
 				'lang'				=>	'default:{defaults}||empty:en_GB',
 				'birthdate'			=>	'default:{defaults}||empty:1980-01-01'
 			] ,
@@ -74,6 +71,10 @@
 			'user_new_pass_request'	=>
 			[
 				'username' 			=>	'required'
+			],
+			'user_change_password'	=>
+			[
+				'password'  			=>	'required||min:5||max:20'
 			]
 		]
 	];

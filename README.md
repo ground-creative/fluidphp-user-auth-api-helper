@@ -89,8 +89,9 @@ catch (\Throwable $e)
 }
 ```
 
-## Endpoints
+# Endpoints
 
-### Wrapper
 
-### API
+## Wrapper
+
+## API
