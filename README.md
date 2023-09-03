@@ -95,7 +95,7 @@ catch (\Throwable $e)
 
 #### Register
 
-- {(http|https)}://{address}/{app_path}/wrapper/register/
+- {(http|https)}://{main_doman}/{app_path}/wrapper/register/
 
 	- method: post
 	- description: registers a new user to the database
@@ -103,7 +103,7 @@ catch (\Throwable $e)
 	
 #### Login
 
-- {(http|https)}://{address}/{app_path}/wrapper/login/
+- {(http|https)}://{main_doman}/{app_path}/wrapper/login/
 	
 	- method: post
 	- description: tries to log user in
@@ -112,21 +112,21 @@ catch (\Throwable $e)
 	
 #### Logout
 
-- {(http|https)}://{address}/{app_path}/wrapper/logout/
+- {(http|https)}://{main_doman}/{app_path}/wrapper/logout/
 	
 	- method: put
 	- description: removes user session data and autologin cookie
 	
 #### Forgot Password
 
-- {(http|https)}://{address}/{app_path}/wrapper/forgot-pass/
+- {(http|https)}://{main_doman}/{app_path}/wrapper/forgot-pass/
 	
 	- description: send an email with a link to reset password
 	- params: username
 	
 #### AutoLogin
 	
-- {(http|https)}://{address}/{app_path}/wrapper/auto-login/{code}/
+- {(http|https)}://{main_doman}/{app_path}/wrapper/auto-login/{code}/
 		
 	- method: put
 	- description: tries to log in with existing login_token
@@ -135,18 +135,74 @@ catch (\Throwable $e)
 	
 #### Verify User Account
 
-- {(http|https)}://{address}/{app_path}/wrapper/verify/{verificationCode}/
+- {(http|https)}://{main_doman}/{app_path}/wrapper/verify/{verificationCode}/
 
 	- method: put
 	- description: tries to verify a user account
 	
 #### Change Password
 	
-- {(http|https)}://{address}/{app_path}/wrapper/change-password/{resetLink}/
+- {(http|https)}://{main_doman}/{app_path}/wrapper/change-password/{resetLink}/
 		
 	- method: post
 	- description: change user password
 	- params: see config/validator.php
 
-
 ### API
+
+The API should be only called directly within the localhost environment, therefor it is not able to set session variables.
+
+#### Register
+
+- {(http|https)}://{USER_AUTH_APP_URL}/{app_path}/account/register/
+
+	- method: post
+	- description: registers a new user to the database
+	- params: see config/validator.php
+
+#### Login
+
+- {(http|https)}://{USER_AUTH_APP_URL}/{app_path}/account/login/
+	
+	- method: post
+	- description: tries to log user in
+	- params: username, password
+	- return data: user data
+	
+#### Logout
+
+- {(http|https)}://{USER_AUTH_APP_URL}/{app_path}/account/logout/{code}/
+	
+	- method: put
+	- description: removes user session data and autologin cookie
+	
+#### Forgot Password
+
+- {(http|https)}://{USER_AUTH_APP_URL}/{app_path}/account/forgot-pass/
+	
+	- description: send an email with a link to reset password
+	- params: username
+	
+#### AutoLogin
+	
+- {(http|https)}://{USER_AUTH_APP_URL}/{app_path}/account/auto-login/{code}/
+		
+	- method: put
+	- description: tries to log in with existing login_token
+	- params: see config/validator.php
+	- return data: returns user data
+	
+#### Verify User Account
+
+- {(http|https)}://{USER_AUTH_APP_URL}/{app_path}/account/verify/{verificationCode}/
+
+	- method: put
+	- description: tries to verify a user account
+	
+#### Change Password
+	
+- {(http|https)}://{USER_AUTH_APP_URL}/{app_path}/account/change-password/{resetLink}/
+		
+	- method: post
+	- description: change user password
+	- params: see config/validator.php
