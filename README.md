@@ -93,18 +93,60 @@ catch (\Throwable $e)
 
 ### Wrapper
 
-#### Register User
+#### Register
 
 - {(http|https)}://{address}/{app_path}/wrapper/register/
 
+	- method: post
 	- description: registers a new user to the database
 	- params: see config/validator.php
-
-
+	
+#### Login
 
 - {(http|https)}://{address}/{app_path}/wrapper/login/
+	
+	- method: post
+	- description: tries to log user in
+	- params: username, password
+	- return data: user data
+	
+#### Logout
+
+- {(http|https)}://{address}/{app_path}/wrapper/logout/
+	
+	- method: put
+	- description: removes user session data and autologin cookie
+	
+#### Forgot Password
+
+- {(http|https)}://{address}/{app_path}/wrapper/forgot-pass/
+	
+	- description: send an email with a link to reset password
+	- params: username
+	
+#### AutoLogin
+	
+- {(http|https)}://{address}/{app_path}/wrapper/auto-login/{code}/
+		
+	- method: put
+	- description: tries to log in with existing login_token
+	- params: see config/validator.php
+	- return data: returns user data
+	
+#### Verify User Account
 
 - {(http|https)}://{address}/{app_path}/wrapper/verify/{verificationCode}/
+
+	- method: put
+	- description: tries to verify a user account
+	
+#### Change Password
+	
+- {(http|https)}://{address}/{app_path}/wrapper/change-password/{resetLink}/
+		
+	- method: post
+	- description: change user password
+	- params: see config/validator.php
 
 
 ### API

@@ -30,7 +30,8 @@
 					ptc_session_set( 'user.data', (array)$json->data, true);
 					if ($json->data->autologin_token)
 					{
-						\Auth::setCookie('_autologin', $json->data->autologin_token, $json->data->autologin_expires, '/');
+						\Auth::setCookie(\App::option('user-auth-api.autologin_cookie_name'), 
+								$json->data->autologin_token, $json->data->autologin_expires, '/');
 					}
 				}
 				return $request->body;
@@ -41,18 +42,55 @@
 			}
 		}
 		/** 
+		* uri: /user-auth-api/wrapper/auto-login/{code}/
+		* description: tries to log in with existing login_token
+		* params: see config/validator.php
+		* return data: returns user data
+		*/
+		public function put_auto_login($code)
+		{
+			if (session_id() == ''){ session_start(); }
+			try
+			{
+				$request = Requests::put(\helpers\UserAuthApi\Core::getApiUrl() . '/account/auto-login/' . $code . '/');
+				$json = json_decode($request->body);
+				if ($json->success == true)
+				{
+					ptc_session_set( 'user.is_loggedin', true, true);
+					ptc_session_set( 'user.data', (array)$json->data, true);
+				}
+			}
+			catch (\Throwable $e)
+			{
+				return '{"error": 1, "message": "' . $e->getMessage() . '", "code": ' . $e->getCode(). '}';
+			}
+		}
+		/** 
 		* uri: /user-auth-api/wrapper/logout/
 		* description: removes user session data and autologin cookie
 		*/			
-		public function post_logout()
+		public function put_logout()
 		{
 			if (session_id() == ''){ session_start(); }
-			if ($code = \Auth::getCookie(\App::option('user-auth-api.autologin_cookie_name')))
-			{
-				Users_Autologin_Tokens::setExpired($code);
-			}
 			ptc_session_set( 'user.is_loggedin', false, true);
 			ptc_session_set( 'user.data', null, true);
+			if ($code = \Auth::getCookie(\App::option('user-auth-api.autologin_cookie_name')))
+			{
+				try
+				{
+					$request = Requests::put(\helpers\UserAuthApi\Core::getApiUrl() . '/account/logout/' . $code . '/');
+					$json = json_decode($request->body);
+					if ($json->success == true)
+					{
+						ptc_session_set( 'user.is_loggedin', true, true);
+						ptc_session_set( 'user.data', (array)$json->data, true);
+					}
+				}
+				catch (\Throwable $e)
+				{
+					return '{"error": 1, "message": "' . $e->getMessage() . '", "code": ' . $e->getCode(). '}';
+				}
+			}
 			\Auth::setCookie(\App::option('user-auth-api.autologin_cookie_name'), 0, 1, '/');
 			return Response::success("user logged out successfully");
 		}
