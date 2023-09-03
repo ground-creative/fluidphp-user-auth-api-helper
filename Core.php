@@ -130,7 +130,7 @@
 							$json = json_decode($request->body);
 							if ($json->success == true)
 							{
-								ptc_session_set( 'user.is_loggedin' , true, true);
+								ptc_session_set( 'user.is_loggedin', true, true);
 								ptc_session_set( 'user.data', (array)$json->data, true);
 							}
 						}
@@ -151,7 +151,7 @@
 						echo ptc_json( 'unauthorized' );
 						return true; // stop further execution
 					}
-					\Router::redirect( \Router::getRoute( 'login' ) , 302 );
+					\Router::redirect( \Router::getRoute('_tpl_login') , 302 );
 					return true; // stop further execution
 				}
 			} );
