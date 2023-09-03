@@ -65,7 +65,7 @@
 		* uri: /user-auth-api/account/auto-login/{code}/
 		* description: tries to log in with existing login_token
 		* params: see config/validator.php
-		* return data: returns a new user autologin token if successful
+		* return data: returns user data
 		*/
 		public function put_auto_login($code)
 		{ 
@@ -80,7 +80,7 @@
 		* description: registers a new user to the database
 		* params: see config/validator.php
 		*/
-		public function post_register( )
+		public function post_register()
 		{
 			$case = "user_register";
 			$inputs = Validator::inputs('_post');
@@ -91,10 +91,10 @@
 							key(reset($errors))), Request::firstError($invalid));
 			}
 			$data = App::storage('_req.' . $case);
-			$remove = ['username', 'email_1', 'email_2', 'password_1', 'password_2'];
+			$remove = ['username', 'email', 'password'];
 			$extra_data = array_diff_key($data, array_flip($remove));
-			$extra_data['email'] = $data['email_1'];
-			$created = Auth::create($data['username'], $data['password_1'], $extra_data, 0);
+			$extra_data['email'] = $data['email'];
+			$created = Auth::create($data['username'], $data['password'], $extra_data, 0);
 			switch ($created)
 			{
 				case 0:
@@ -136,12 +136,12 @@
 			}
 		}
 		/**
-		* uri: /user-auth-api/account/new-password-request/
+		* uri: /user-auth-api/account/forgot-pass/
 		* params: see config/validator.php
 		* description: send an email with a link to reset the user password
 		* params: username
 		*/
-		public function post_new_password_request()
+		public function post_forgot_password()
 		{
 			$case = "user_new_pass_request";
 			$inputs = Validator::inputs('_request');
@@ -170,7 +170,7 @@
 		/**
 		* uri: /user-auth-api/account/change-password/{resetLink}/
 		* description: change user password
-		* params 
+		* params: see config/validator.php
 		*/
 		public function post_change_password($resetLink)
 		{
@@ -192,6 +192,15 @@
 			}
 			User_Control_Links::setExpired($resetLink);
 			return Response::success("User password has been changed");
+		}
+		/** 
+		* uri: /user-auth-api/account/logout/{autoLoginToken}/
+		* description: removes user session data and autologin cookie
+		*/			
+		public function put_logout($autoLoginToken)
+		{
+			Users_Autologin_Tokens::setExpired($autoLoginToken);
+			return Response::success("User autologin token has been removed from database");
 		}
 		/**
 		* parameters regex patterns

@@ -118,7 +118,7 @@
 				if (session_id() == ''){ session_start(); }
 				if (!ptc_session_get( 'user.is_loggedin'))
 				{
-					if ($autologin = \Auth::getCookie('_autologin'))
+					if ($autologin = \Auth::getCookie(\App::option('user-auth-api.autologin_cookie_name')))
 					{
 						try
 						{
@@ -132,7 +132,12 @@
 						}
 						catch (\Throwable $e)
 						{
-							return '{"error": 1, "message": "' . $e->getMessage() . '", "code": ' . $e->getCode(). '}';
+							$array = ['error' => 1, 'message' => $e->getMessage(),'code' => $e->getCode()];
+							//return json_encode($array);
+							Logger::msg('error with _user-auth-api.check_login filer')
+								->data($array)
+								->script(__METHOD__, __LINE__)
+								->save();
 						}
 						
 					}

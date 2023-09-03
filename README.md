@@ -122,6 +122,7 @@ catch (\Throwable $e)
 
 - {(http|https)}://{main_doman}/{app_path}/wrapper/forgot-pass/
 	
+	- method: post
 	- description: send an email with a link to reset password
 	- params: username
 	
@@ -179,7 +180,7 @@ The API should be only called directly within the localhost environment, therefo
 	
 #### Forgot Password
 
-- {(http|https)}://{USER_AUTH_APP_URL}/{app_path}/account/forgot-pass/
+- {(http|https)}://{USER_AUTH_APP_URL}/{app_path}/account/forgot-password/
 	
 	- description: send an email with a link to reset password
 	- params: username
