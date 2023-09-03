@@ -57,7 +57,7 @@ Add the filter "_user-auth-api.check_login" to all the routes that require acces
 
 ### Using the api wrapper
 
-The api wrapper is a convenient way to make the calls from js directly.<br />
+The api wrapper is a convenient way to make the calls from js directly, as it can set the session variables directly.<br />
 To call the api wrapper u can use any request library
 ```
 $app = \App::option('app');
@@ -89,9 +89,22 @@ catch (\Throwable $e)
 }
 ```
 
-# Endpoints
+## Endpoints
+
+### Wrapper
+
+#### Register User
+
+- {(http|https)}://{address}/{app_path}/wrapper/register/
+
+	- description: registers a new user to the database
+	- params: see config/validator.php
 
 
-## Wrapper
 
-## API
+- {(http|https)}://{address}/{app_path}/wrapper/login/
+
+- {(http|https)}://{address}/{app_path}/wrapper/verify/{verificationCode}/
+
+
+### API
