@@ -25,16 +25,57 @@
 			\App::options('validator.user-auth-api', require_once($auth_options['validator_file']));
 			Validator::loadConfig(\App::options('validator.user-auth-api'));
 			\App::storage('_user_auth_api.session.id', \Auth::random(26));
-			if  ($auth_options['set_handlers'] == true){ static::_setHandlers();}
-			//static::_setHandlers();
+			if ($auth_options['set_handlers'] == true){ static::_setHandlers(); }
 			if ('put' === strtolower($_SERVER['REQUEST_METHOD']) && empty($data))	// patching the put request
 			{
 				$_REQUEST = Validator::inputs('_put');
 			}
-			if  (!\HandyMan::getProperty( '\Auth' , '_configured')){ static::_setUpAuth(); }
-			//Event::fire('api.maintenance', [ ]); 	// fire maintenance event
+			if (!\HandyMan::getProperty('\Auth' , '_configured')){ static::_setUpAuth(); }
 			static::_setObservers();
 			static::_setRoutes();
+			ptc_listen('app.stop', function()
+			{ 
+				if (date('H') == '03'){ \helpers\UserAuthApi\Core::runCleaner(); }
+			}, 0);
+		}
+		
+		public static function runCleaner()
+		{
+			if ($last_run = models\Cleaner::row('last_run'))
+			{
+				if (strtotime("+1 day", strtotime($last_run) < strtotime('now')))
+				{
+					$when =  \App::option('app.auth-user-api.delete_old_logs');
+					if ($when != 'never')
+					{ 
+						\helpers\Logger\Instance::where('time_create', '<', date('Y-m-d H:i:s', strtotime('-' . $when . ' week')))
+							->delete()
+							->run();
+					}
+					$when =  \App::option('app.auth-user-api.delete_old_autologin_tokens');
+					if ($when != 'never')
+					{ 
+						models\Users_Autologin_Tokens::where('expires', '<', date('Y-m-d H:i:s', strtotime('-' . $when . ' week')))
+							->delete()
+							->run();
+					}
+					$when =  \App::option('app.auth-user-api.delete_old_user_control_links');
+					if ($when != 'never')
+					{ 
+						models\User_Control_Links::where('expires', '<', date('Y-m-d H:i:s', strtotime('-' . $when . ' week')))
+							->delete()
+							->run();
+					}
+					$cleaner = models\Cleaner::row();	
+					$cleaner->last_run = date('Y-m-d H:i:s');
+					$cleaner->save();
+				}			
+			}
+			else
+			{	
+				$record = ['last_run' => date('Y-m-d H:i:s')];
+				models\Cleaner::insert($record)->run();
+			}
 		}
 		
 		protected static function _setObservers()
@@ -94,6 +135,13 @@
 						`user_id` int(11) DEFAULT NULL,
 						`expires` timestamp DEFAULT NULL,
 						`status` tinyint(1) DEFAULT NULL,
+						PRIMARY KEY (`id`)
+				);');
+			} 
+			if (empty($qb->run('SHOW TABLES LIKE "cleaner"')))
+			{
+				$qb->run('CREATE TABLE `cleaner` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+						`last_run` datetime NOT NULL,
 						PRIMARY KEY (`id`)
 				);');
 			}

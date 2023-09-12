@@ -10,6 +10,9 @@
 		'autologin_expires'			=>	'30', // days
 		'autologin_cookie_name'		=>	'_autologin',
 		'validator_file'				=>	ptc_path('root') . '/vendor/fluidphp/helpers/UserAuthApi/config/validator.php',
+		'delete_old_logs'			=>	4, // weeks
+		'delete_old_autologin_tokens'	=>	4, //weeks
+		'delete_old_user_control_links' =>	4, //weeks
 		'mail_tpls_data'	=>
 		[
 			"_company_name"		=>	$_ENV['EMAIL_COMPANY_ADDRESS'],
