@@ -174,18 +174,19 @@
 					{
 						try
 						{
+							Logger::debug('trying request to autologin user')->data($array)->script(__METHOD__, __LINE__)->save();
 							$request = Requests::put(\helpers\UserAuthApi\Core::getApiUrl() . '/account/auto-login/' . $autologin . '/');
 							$json = json_decode($request->body);
 							if ($json->success == true)
 							{
 								ptc_session_set( 'user.is_loggedin', true, true);
 								ptc_session_set( 'user.data', (array)$json->data, true);
+								return;
 							}
 						}
 						catch (\Throwable $e)
 						{
 							$array = ['error' => 1, 'message' => $e->getMessage(),'code' => $e->getCode()];
-							//return json_encode($array);
 							Logger::msg('error with _user-auth-api.check_login filer')
 								->data($array)
 								->script(__METHOD__, __LINE__)
@@ -196,7 +197,7 @@
 					if ( \Router::isAjax( ) )
 					{ 
 						Router::header( 401 ); 
-						echo ptc_json( 'unauthorized' );
+						echo ptc_json('unauthorized');
 						return true; // stop further execution
 					}
 					\Router::redirect( \Router::getRoute('_tpl_login') , 302 );
